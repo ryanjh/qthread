@@ -26,4 +26,11 @@ HEADERS += \
     qt_console.h
 
 INCLUDEPATH += /usr/local/src/openthread/output/include
-LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib/ -lopenthread-posix -lopenthread-ftd -lopenthread-diag -lopenthread-cli-ftd
+
+LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-diag
+LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-cli-ftd
+LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-platform-utils
+LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lmbedcrypto
+LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-ncp-ftd
+LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-posix
+LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-ftd
