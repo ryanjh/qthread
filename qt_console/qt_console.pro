@@ -42,7 +42,7 @@ LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenth
 LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-platform-utils
 
 #(Optional) Command Line Interface (CLI) library
-LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-cli-ftd
+#LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-cli-ftd
 
 #(Optional) OpenThread’s diagnostic module library
 LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-diag
