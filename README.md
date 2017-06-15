@@ -9,18 +9,3 @@ Build (qt_console):
 Test:
 1. ./build/qt_console
 2. /usr/local/src/openthread/output/x86_64-unknown-linux-gnu/bin/ot-cli-ftd 2 (>panid 0x1234, >ifconfig up, >thread start)
-
-Log:
-Hello Qt_console!
-otLinkSetPanId (0)
-panid = 0x1234
-otIp6SetEnabled (0)
-ifconfig up
-otThreadSetEnabled (0)
-thread start
-waiting thread network ...
-state detached
-waiting thread network ...
-state detached
-waiting thread network ...
-state leader
