@@ -45,13 +45,13 @@ extern "C" void otPlatUartSendDone(void)
 
 Qthread::Qthread()
 {
-    char *argv_default[2] = {argv[0], (char*) "1"};
+    char *argv_default[2] = {(char*) "qthread.cpp", (char*) "1"};
     PlatformInit(2, argv_default);
 
     otInstance *sInstance = otInstanceInit();
     assert(sInstance);
 
-    SystemThread system_thread(sInstance);
+    system_thread = (QThread*) new SystemThread(sInstance);
 
     printf("otLinkSetPanId (%d)\n", otLinkSetPanId(sInstance, static_cast<otPanId>(0x1234)));
     printf("panid = 0x%x\n", otLinkGetPanId(sInstance));
@@ -65,7 +65,7 @@ Qthread::Qthread()
     printf("otThreadSetEnabled (%d)\n", otThreadSetEnabled(sInstance, true));
     printf("thread start\n");
 
-    system_thread.start();
+    system_thread->start();
 
     bool poll_devRole = true;
     while (poll_devRole)
