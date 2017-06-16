@@ -22,27 +22,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-HEADERS += \
-    qt_console.h
+HEADERS += qt_console.h
 
-INCLUDEPATH += /usr/local/src/openthread/output/include
+INCLUDEPATH += $$PWD/../../include
 
-QMAKE_LFLAGS += -Wl,--start-group
-
-#OpenThread’s Thread Stack implementation of the Full Thread Device (FTD)
-LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-ftd
-
-#MbedTLS SSL library with CryptoCell support for ECC operations
-LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lmbedcrypto
-
-#Posix OpenThread’s platform implementation library
-LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-posix
-
-#OpenThread’s platform util which contains the flash manager library
-LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-platform-utils
-
-#(Optional) Command Line Interface (CLI) library
-#LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-cli-ftd
-
-#(Optional) OpenThread’s diagnostic module library
-LIBS += -L/usr/local/src/openthread/output/x86_64-unknown-linux-gnu/lib -lopenthread-diag
+LIBS += -L$$PWD/../../lib -lqthread

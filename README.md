@@ -10,9 +10,9 @@ Environment (Docker qthread:16.04_dev): https://hub.docker.com/r/ryanjh31011/qth
 
 Build (GitHub qt_console): https://github.com/ryanjh/qthread/tree/master/qt_console
 1. cd qthread/
-2. /opt/Qt/5.8/gcc_64/bin/qmake -o build/Makefile qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
-3. make -C build/
+2. /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
+3. make -C build/qt_console/
 
 Test:
-1. ./build/qt_console
+1. build/qt_console/qt_console
 2. /usr/local/src/openthread/output/x86_64-unknown-linux-gnu/bin/ot-cli-ftd 2 (>panid 0x1234, >ifconfig up, >thread start)
