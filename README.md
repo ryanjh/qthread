@@ -11,6 +11,7 @@ Environment (Docker qthread:16.04_dev): https://hub.docker.com/r/ryanjh31011/qth
 Build (GitHub libqthread.a) https://github.com/ryanjh/qthread/tree/qthread_library/src
 1. /opt/Qt/5.8/gcc_64/bin/qmake -o build/qthread/Makefile qthread.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
 2. make -C build/qthread/
+3. sudo make -C build/qthread/ install
 
 Build (GitHub qt_console): https://github.com/ryanjh/qthread/tree/master/qt_console
 1. cd qthread/

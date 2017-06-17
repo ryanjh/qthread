@@ -26,4 +26,10 @@ HEADERS += qt_console.h
 
 INCLUDEPATH += $$PWD/../../include
 
-LIBS += -L$$PWD/../../lib -lqthread
+test {
+unix:LIBS += -L$$OUT_PWD/../qthread -lqthread
+message("Library Development: Link libqthread in " $$LIBS)
+} else {
+unix:LIBS += -L/usr/local/lib/qthread -lqthread
+message("Application Development: Link libqthread in " $$LIBS)
+}
