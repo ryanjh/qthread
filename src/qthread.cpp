@@ -43,10 +43,14 @@ extern "C" void otPlatUartSendDone(void)
     //-lopenthread-cli-ftd
 }
 
+uint32_t Qthread::internal_nodeId = NODE_ID;
+
 Qthread::Qthread()
 {
     char *argv_default[2] = {(char*) "qthread.cpp", (char*) "1"};
     PlatformInit(2, argv_default);
+
+    printf("nodeid = 0x%x\n", Qthread::internal_nodeId++);
 
     otInstance *sInstance = otInstanceInit();
     assert(sInstance);
@@ -103,4 +107,9 @@ Qthread::Qthread()
             break;
         }
     }
+}
+
+Qthread::~Qthread()
+{
+    //TODO stop system_thread
 }
