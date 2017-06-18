@@ -5,8 +5,9 @@ Environment (Docker qthread:16.04_dev): https://hub.docker.com/r/ryanjh31011/qth
 1. docker run -v ~/Desktop/qthread/ryan:/home/ryan -d -P ryanjh31011/qthread:16.04_dev /usr/sbin/sshd -D
 2. ssh -p 32779 root@192.168.99.100 #The Port and IP address should be set accordantly
 3. adduser ryan #Add your user account
-4. su - ryan    #Switch to your account
-5. git clone https://github.com/ryanjh/qthread.git
+4. adduser qthread sudo
+5. su - ryan    #Switch to your account
+6. git clone https://github.com/ryanjh/qthread.git
 
 Build (GitHub libqthread.a) https://github.com/ryanjh/qthread/tree/qthread_library/src
 1. /opt/Qt/5.8/gcc_64/bin/qmake -o build/qthread/Makefile qthread.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
