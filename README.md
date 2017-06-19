@@ -19,7 +19,8 @@ Build (GitHub qt_console): https://github.com/ryanjh/qthread/tree/master/qt_cons
 1. cd qthread/
 2. /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=test CONFIG+=qml_debug
 3. OR /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debu
-4. make -C build/qt_console/
+4. OR /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=test_Linux_x86_64 CONFIG+=qml_debu
+5. make -C build/qt_console/
 
 Test:
 1. build/qt_console/qt_console
