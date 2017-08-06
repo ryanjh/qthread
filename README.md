@@ -17,9 +17,12 @@ Build (GitHub libqthread.a) https://github.com/ryanjh/qthread/tree/qthread_libra
 
 Build (GitHub qt_console): https://github.com/ryanjh/qthread/tree/master/qt_console
 1. cd qthread/
-2. /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug                               #Link /usr/local/lib/qthread/libqthread.a
-3. OR /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug_lib CONFIG+=debug CONFIG+=qml_debu                  #Link build/qthread/libqthread.a
-4. OR /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=release_Linux_x86_64 CONFIG+=qml_debu   #Link lib/libqthread_Linux_x86_64.a
+2. Link installed library (/usr/local/lib/qthread/libqthread.a)
+/opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
+3. OR Link built library (build/qthread/libqthread.a)
+/opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug_lib CONFIG+=debug CONFIG+=qml_debu
+4. OR Link released library (lib/libqthread_Linux_x86_64.a)
+/opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=release_Linux_x86_64 CONFIG+=qml_debu
 5. make -C build/qt_console/
 
 Test:
