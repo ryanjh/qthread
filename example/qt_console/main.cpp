@@ -13,11 +13,7 @@ int main(int argc, char *argv[])
     cout<< "Hello Qt_console!\n";
 
     Qthread qthread;
-
-    while (true)
-    {
-        //NOOP
-    }
+    qthread.listIpAddr();
 
     return a.exec();
 }

@@ -3,9 +3,12 @@ class Qthread
 public:
     Qthread();
     virtual ~Qthread();
+
+    void listIpAddr(void);
+    void sanityTest(void);
 private:
-    QThread *system_thread;
-    static uint32_t internal_nodeId;
+    QThread *system_thread = nullptr;
+    void    *instance      = nullptr;
 };
 
 /*  /usr/local/src/openthread/examples/platforms/posix/platform-posix.h  */
