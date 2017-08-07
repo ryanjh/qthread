@@ -1,10 +1,12 @@
 #include <QThread>
+#include <QtEndian>
 #include <iostream>
 #include <assert.h>
 
 // OpenThread API
 #include <openthread/openthread.h>
 #include <openthread/platform/platform.h>
+#include <openthread/diag.h>
 
 #include <qthread.hpp>
 
@@ -48,13 +50,15 @@ Qthread::Qthread()
     char *argv_default[2] = {(char*) "qthread.cpp", (char*) "1"};
     PlatformInit(2, argv_default);
 
+    printf("nodeid = %#x\n", NODE_ID);
+
     otInstance *sInstance = otInstanceInit();
     assert(sInstance);
 
     system_thread = (QThread*) new SystemThread(sInstance);
 
     printf("otLinkSetPanId (%d)\n", otLinkSetPanId(sInstance, static_cast<otPanId>(0x1234)));
-    printf("panid = 0x%x\n", otLinkGetPanId(sInstance));
+    printf("panid = %#x\n", otLinkGetPanId(sInstance));
 
     if (!otIp6IsEnabled(sInstance))
     {
@@ -88,12 +92,12 @@ Qthread::Qthread()
             break;
 
         case OT_DEVICE_ROLE_ROUTER:
-            printf("state router\n");
+            printf("state router, rloc16 = %#x\n", otThreadGetRloc16(sInstance));
             poll_devRole = false;
             break;
 
         case OT_DEVICE_ROLE_LEADER:
-            printf("state leader\n");
+            printf("state leader, rloc16 = %#x\n", otThreadGetRloc16(sInstance));
             poll_devRole = false;
             break;
 
@@ -102,5 +106,116 @@ Qthread::Qthread()
             poll_devRole = false;
             break;
         }
+    }
+
+    // initialize diagnostics module
+    otDiagInit(sInstance);
+    instance = static_cast< void* > (sInstance);
+}
+
+Qthread::~Qthread()
+{
+    //TODO stop system_thread
+}
+
+void Qthread::listIpAddr(void)
+{
+    otInstance *sInstance = static_cast< otInstance* > (instance);
+    if (sInstance)
+    {
+        for (const otNetifAddress *addr = otIp6GetUnicastAddresses(sInstance); addr; addr = addr->mNext)
+        {
+            printf("%x:%x:%x:%x:%x:%x:%x:%x\r\n",
+                qToBigEndian(addr->mAddress.mFields.m16[0]),
+                qToBigEndian(addr->mAddress.mFields.m16[1]),
+                qToBigEndian(addr->mAddress.mFields.m16[2]),
+                qToBigEndian(addr->mAddress.mFields.m16[3]),
+                qToBigEndian(addr->mAddress.mFields.m16[4]),
+                qToBigEndian(addr->mAddress.mFields.m16[5]),
+                qToBigEndian(addr->mAddress.mFields.m16[6]),
+                qToBigEndian(addr->mAddress.mFields.m16[7]));
+        }
+    }
+}
+
+void Qthread::sanityTest(void)
+{
+    static const struct
+    {
+        const char *command;
+        const char *output;
+    } tests[] =
+    {
+        {
+            "diag\n",
+            "diagnostics mode is disabled\r\n",
+        },
+        {
+            "diag send 10 100\n",
+            "failed\r\nstatus 0xd\r\n",
+        },
+        {
+            "diag start\n",
+            "start diagnostics mode\r\nstatus 0x00\r\n",
+        },
+        {
+            "diag\n",
+            "diagnostics mode is enabled\r\n",
+        },
+        {
+            "diag channel 10\n",
+            "failed\r\nstatus 0x7\r\n",
+        },
+        {
+            "diag channel 11\n",
+            "set channel to 11\r\nstatus 0x00\r\n",
+        },
+        {
+            "diag channel\n",
+            "channel: 11\r\n",
+        },
+        {
+            "diag power -10\n",
+            "set tx power to -10 dBm\r\nstatus 0x00\r\n",
+        },
+        {
+            "diag power\n",
+            "tx power: -10 dBm\r\n",
+        },
+        {
+            "diag stats\n",
+            "received packets: 0\r\nsent packets: 0\r\nfirst received packet: rssi=0, lqi=0\r\n",
+        },
+        {
+            "diag send 20 100\n",
+            "sending 0x14 packet(s), length 0x64\r\nstatus 0x00\r\n",
+        },
+        {
+            "diag repeat 100 100\n",
+            "sending packets of length 0x64 at the delay of 0x64 ms\r\nstatus 0x00\r\n"
+        },
+        {
+            "diag sleep\n",
+            "sleeping now...\r\n",
+        },
+        {
+            "diag stop\n",
+            "received packets: 0\r\nsent packets: 0\r\nfirst received packet: rssi=0, lqi=0\r\n\nstop diagnostics mode\r\nstatus 0x00\r\n",
+        },
+        {
+            "diag\n",
+            "diagnostics mode is disabled\r\n",
+        },
+    };
+
+    for (unsigned int i = 0; i < sizeof(tests) / sizeof(tests[0]);  i++)
+    {
+        char string[50];
+        char *output = NULL;
+
+        memcpy(string, tests[i].command, strlen(tests[i].command) + 1);
+
+        output = otDiagProcessCmdLine(string);
+        cout << output << endl;
     }
 }
