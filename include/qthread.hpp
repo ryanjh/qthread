@@ -8,7 +8,7 @@ public:
     Qthread();
     explicit Qthread(uint32_t node_id);
     virtual ~Qthread();
-    Qthread(const Qthread&) = delete;
+    Qthread(const Qthread&)            = delete;
     Qthread& operator=(const Qthread&) = delete;
 
     void listIpAddr(void);

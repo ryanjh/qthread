@@ -151,6 +151,7 @@ Qthread::~Qthread()
         otInstanceFinalize(sInstance);
     }
 
+    delete system_thread;
     delete [] instanceBuffer;
 }
 
