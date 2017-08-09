@@ -1,14 +1,23 @@
+class SystemThread; //forward declaration
+
 class Qthread
 {
+    friend class SystemThread;
+
 public:
     Qthread();
+    explicit Qthread(uint32_t node_id);
     virtual ~Qthread();
+    Qthread(const Qthread&)            = delete;
+    Qthread& operator=(const Qthread&) = delete;
 
     void listIpAddr(void);
     void sanityTest(void);
+
 private:
-    QThread *system_thread = nullptr;
-    void    *instance      = nullptr;
+    SystemThread *system_thread  = nullptr;
+    void         *instance       = nullptr;
+    uint8_t      *instanceBuffer = nullptr;
 };
 
 /*  /usr/local/src/openthread/examples/platforms/posix/platform-posix.h  */

@@ -15,15 +15,16 @@ using namespace std;
 class SystemThread : public QThread
 {
 public:
-    SystemThread(otInstance *instance) : sysInstance(instance) {}
+    SystemThread(const Qthread &qInstance) : qthread(qInstance) {}
 
 private:
-    otInstance *sysInstance = NULL;
+    const Qthread &qthread;
 
     void run()
     {
-        while (sysInstance)
+        while (qthread.instance)
         {
+            otInstance *sysInstance = static_cast< otInstance* > (qthread.instance);
             otTaskletsProcess(sysInstance);
             PlatformProcessDrivers(sysInstance);
         }
@@ -45,17 +46,37 @@ extern "C" void otPlatUartSendDone(void)
     //-lopenthread-cli-ftd
 }
 
-Qthread::Qthread()
+Qthread::Qthread() : Qthread(NODE_ID)
 {
-    char *argv_default[2] = {(char*) "qthread.cpp", (char*) "1"};
+}
+
+Qthread::Qthread(uint32_t node_id)
+{
+    char *argv_default[2] = {(char*) "qthread.cpp",
+                             (char*) QString("%1").arg(node_id).toStdString().c_str()};
     PlatformInit(2, argv_default);
 
     printf("nodeid = %#x\n", NODE_ID);
 
-    otInstance *sInstance = otInstanceInit();
+    // Call to query the buffer size
+    size_t instanceBufferLength = 0;
+    (void)otInstanceInit(NULL, &instanceBufferLength);
+
+    // Call to allocate the buffer
+    instanceBuffer = new uint8_t[instanceBufferLength];
+    assert(instanceBuffer);
+
+    // Initialize OpenThread with the buffer
+    otInstance *sInstance = otInstanceInit(instanceBuffer, &instanceBufferLength);
     assert(sInstance);
 
-    system_thread = (QThread*) new SystemThread(sInstance);
+    // Create system thread
+    system_thread = new SystemThread(*this);
+    assert(system_thread);
+
+    // Start system thread for task scheduling
+    instance = static_cast< void* > (sInstance);
+    system_thread->start();
 
     printf("otLinkSetPanId (%d)\n", otLinkSetPanId(sInstance, static_cast<otPanId>(0x1234)));
     printf("panid = %#x\n", otLinkGetPanId(sInstance));
@@ -67,9 +88,6 @@ Qthread::Qthread()
     printf("ifconfig up\n");
 
     printf("otThreadSetEnabled (%d)\n", otThreadSetEnabled(sInstance, true));
-    printf("thread start\n");
-
-    system_thread->start();
 
     bool poll_devRole = true;
     while (poll_devRole)
@@ -110,12 +128,31 @@ Qthread::Qthread()
 
     // initialize diagnostics module
     otDiagInit(sInstance);
-    instance = static_cast< void* > (sInstance);
 }
 
 Qthread::~Qthread()
 {
-    //TODO stop system_thread
+    otInstance *sInstance = static_cast< otInstance* > (instance);
+
+    if (system_thread)
+    {
+        //stop running loop of system thread
+        instance = nullptr;
+
+        if(!system_thread->wait(5000))
+        {
+            system_thread->terminate();
+            system_thread->wait();
+        }
+    }
+
+    if (sInstance)
+    {
+        otInstanceFinalize(sInstance);
+    }
+
+    delete system_thread;
+    delete [] instanceBuffer;
 }
 
 void Qthread::listIpAddr(void)
