@@ -21,6 +21,7 @@ INCLUDEPATH += $$OPENTHREADINC
 QMAKE_LFLAGS += -Wl,--start-group
 
 DEFINES += OPENTHREAD_MULTIPLE_INSTANCE
+PRE_TARGETDEPS += $$OPENTHREADLIB/libopenthread-posix.a
 
 #OpenThreads libraries path
 LIBS += -L$$OPENTHREADLIB
