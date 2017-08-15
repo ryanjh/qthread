@@ -11,6 +11,8 @@ public:
     Qthread(const Qthread&)            = delete;
     Qthread& operator=(const Qthread&) = delete;
 
+    bool operator==(const Qthread&);
+
     void listIpAddr(void);
     void sanityTest(void);
 

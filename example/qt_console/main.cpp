@@ -14,6 +14,18 @@ int main(int argc, char *argv[])
 
     Qthread qthread;
     qthread.listIpAddr();
+#if 1
+    Qthread qthread2(2);
+    qthread2.listIpAddr();
 
+    if (qthread == qthread2)
+    {
+        cout << "[yes]" << endl;
+    }
+    else
+    {
+        cout << "[no]" << endl;
+    }
+#endif
     return a.exec();
 }
