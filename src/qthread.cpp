@@ -1,5 +1,6 @@
 #include <QThread>
 #include <QtEndian>
+#include <QString>
 #include <iostream>
 #include <assert.h>
 
@@ -10,21 +11,60 @@
 
 #include <qthread.hpp>
 
+/**
+ * Unique node ID.
+ *
+ */
+extern uint32_t NODE_ID;
+
 using namespace std;
 
 class SystemThread : public QThread
 {
 public:
-    SystemThread(const Qthread &qInstance) : qthread(qInstance) {}
+    SystemThread(const Qthread &qInstance) : qthread(qInstance), deviceRole(OT_DEVICE_ROLE_DISABLED) {}
 
 private:
     const Qthread &qthread;
+    otDeviceRole deviceRole;
 
     void run()
     {
         while (qthread.instance)
         {
             otInstance *sysInstance = static_cast< otInstance* > (qthread.instance);
+
+            otDeviceRole newRole = otThreadGetDeviceRole(sysInstance);
+            if (deviceRole != newRole)
+            {
+                switch (newRole)
+                {
+                case OT_DEVICE_ROLE_DISABLED:
+                    printf("switch disabled\n");
+                    break;
+
+                case OT_DEVICE_ROLE_DETACHED:
+                    printf("switch detached\n");
+                    break;
+
+                case OT_DEVICE_ROLE_CHILD:
+                    printf("switch child, rloc16 = %#x\n", otThreadGetRloc16(sysInstance));
+                    break;
+
+                case OT_DEVICE_ROLE_ROUTER:
+                    printf("switch router, rloc16 = %#x\n", otThreadGetRloc16(sysInstance));
+                    break;
+
+                case OT_DEVICE_ROLE_LEADER:
+                    printf("switch leader, rloc16 = %#x\n", otThreadGetRloc16(sysInstance));
+                    break;
+
+                default:
+                    printf("switch unknown (%d)\n", newRole);
+                }
+                deviceRole = newRole;
+            }
+
             otTaskletsProcess(sysInstance);
             PlatformProcessDrivers(sysInstance);
         }
@@ -54,20 +94,27 @@ Qthread::Qthread(uint32_t node_id)
 {
     char *argv_default[2] = {(char*) "qthread.cpp",
                              (char*) QString("%1").arg(node_id).toStdString().c_str()};
+
     PlatformInit(2, argv_default);
 
-    printf("nodeid = %#x\n", NODE_ID);
-
     // Call to query the buffer size
-    size_t instanceBufferLength = 0;
-    (void)otInstanceInit(NULL, &instanceBufferLength);
+    size_t pfBufferLength = 0;
+    (void)PlatformAlloc(NULL, &pfBufferLength);
+
+    size_t otBufferLength = 0;
+    (void)otInstanceInit(NULL, &otBufferLength);
 
     // Call to allocate the buffer
-    instanceBuffer = new uint8_t[instanceBufferLength];
+    instanceBuffer = new uint8_t[pfBufferLength + otBufferLength] {};
     assert(instanceBuffer);
 
+    // Initialize platform with the buffer
+    otInstance *sInstance = PlatformAlloc(instanceBuffer, &pfBufferLength);
+    assert(sInstance);
+
     // Initialize OpenThread with the buffer
-    otInstance *sInstance = otInstanceInit(instanceBuffer, &instanceBufferLength);
+    sInstance = otInstanceInit(sInstance, &otBufferLength);
+    printf("sInstance = %p\n", sInstance);
     assert(sInstance);
 
     // Create system thread
@@ -89,41 +136,26 @@ Qthread::Qthread(uint32_t node_id)
 
     printf("otThreadSetEnabled (%d)\n", otThreadSetEnabled(sInstance, true));
 
+    printf("waiting thread network ...\n");
     bool poll_devRole = true;
     while (poll_devRole)
     {
-        printf("waiting thread network ...\n");
-        QThread::sleep(1);
-
         switch (otThreadGetDeviceRole(sInstance))
         {
         case OT_DEVICE_ROLE_DISABLED:
-            printf("state disabled\n");
-            break;
-
         case OT_DEVICE_ROLE_DETACHED:
-            printf("state detached\n");
             break;
 
         case OT_DEVICE_ROLE_CHILD:
-            printf("state child\n");
-            break;
-
         case OT_DEVICE_ROLE_ROUTER:
-            printf("state router, rloc16 = %#x\n", otThreadGetRloc16(sInstance));
-            poll_devRole = false;
-            break;
-
         case OT_DEVICE_ROLE_LEADER:
-            printf("state leader, rloc16 = %#x\n", otThreadGetRloc16(sInstance));
             poll_devRole = false;
             break;
 
         default:
-            printf("invalid state\n");
-            poll_devRole = false;
-            break;
+            throw("Error: thread network returns fail\n");
         }
+        QThread::sleep(1);
     }
 
     // initialize diagnostics module
@@ -153,6 +185,15 @@ Qthread::~Qthread()
 
     delete system_thread;
     delete [] instanceBuffer;
+}
+
+bool Qthread::operator==(const Qthread& qthread)
+{
+    if (instance == qthread.instance)
+    {
+        return true;
+    }
+    return false;
 }
 
 void Qthread::listIpAddr(void)
