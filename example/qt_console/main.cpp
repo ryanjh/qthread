@@ -1,4 +1,5 @@
 #include <QCoreApplication>
+#include <QString>
 #include <iostream>
 #include <assert.h>
 
@@ -12,20 +13,21 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     cout<< "Hello Qt_console!\n";
 
+    for (int i = 1; i < argc; i++)
+    {
+        switch(static_cast<Argv>(i))
+        {
+            case Argv::MAX_NODES:
+            WELLKNOWN_NODE_ID = QString(argv[i]).toUInt();
+            break;
+        }
+    }
+
     Qthread qthread;
     qthread.listIpAddr();
-#if 1
+
     Qthread qthread2(2);
     qthread2.listIpAddr();
 
-    if (qthread == qthread2)
-    {
-        cout << "[yes]" << endl;
-    }
-    else
-    {
-        cout << "[no]" << endl;
-    }
-#endif
     return a.exec();
 }
