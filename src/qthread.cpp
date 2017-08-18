@@ -121,10 +121,6 @@ Qthread::Qthread(uint32_t node_id)
     system_thread = new SystemThread(*this);
     assert(system_thread);
 
-    // Start system thread for task scheduling
-    instance = static_cast< void* > (sInstance);
-    system_thread->start();
-
     printf("otLinkSetPanId (%d)\n", otLinkSetPanId(sInstance, static_cast<otPanId>(0x1234)));
     printf("panid = %#x\n", otLinkGetPanId(sInstance));
 
@@ -137,6 +133,11 @@ Qthread::Qthread(uint32_t node_id)
     printf("otThreadSetEnabled (%d)\n", otThreadSetEnabled(sInstance, true));
 
     printf("waiting thread network ...\n");
+
+    // Start system thread for task scheduling
+    instance = static_cast< void* > (sInstance);
+    system_thread->start();
+
     bool poll_devRole = true;
     while (poll_devRole)
     {
@@ -155,7 +156,6 @@ Qthread::Qthread(uint32_t node_id)
         default:
             throw("Error: thread network returns fail\n");
         }
-        QThread::sleep(1);
     }
 
     // initialize diagnostics module
