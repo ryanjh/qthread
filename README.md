@@ -1,8 +1,8 @@
 # Qthread = Qt + OpenThread
 ![Architecture](https://cloud.githubusercontent.com/assets/22163926/26624410/59df27ca-4623-11e7-8ea7-15b68b3f2f71.JPG)
 
-Environment (Docker qthread:Ubuntu16.04_40ff2d8): https://hub.docker.com/r/ryanjh31011/qthread/
-1. docker run -v ~/Desktop/qthread/ryan:/home/ryan -d -P ryanjh31011/qthread:Ubuntu16.04_40ff2d8 /usr/sbin/sshd -D
+Environment (Docker qthread:Ubuntu16.04_8dac8f2): https://hub.docker.com/r/ryanjh31011/qthread/
+1. docker run -v ~/Desktop/qthread/ryan:/home/ryan -d -P ryanjh31011/qthread:Ubuntu16.04_8dac8f2 /usr/sbin/sshd -D
 2. ssh -p 32779 root@192.168.99.100 #The Port and IP address should be set accordantly
 3. adduser ryan #Add your user account
 4. adduser ryan sudo
