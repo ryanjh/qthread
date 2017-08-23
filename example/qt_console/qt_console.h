@@ -7,4 +7,6 @@
 enum class Argv
 {
     MAX_NODES = 1,
+    START_NODEID,
+    CREATE_NODES,
 };
