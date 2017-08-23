@@ -25,6 +25,11 @@ Build (GitHub qt_console): https://github.com/ryanjh/qthread/tree/master/qt_cons
 /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=release_Linux_x86_64 CONFIG+=qml_debug
 5. make -C build/qt_console/
 
+Build patched Openthread static libraries
+1. git clone https://github.com/ryanjh/openthread
+2. ./bootstrap
+3. make -f examples/Makefile-posix
+
 Test:
 1. build/qt_console/qt_console
 2. /usr/local/src/openthread/output/x86_64-unknown-linux-gnu/bin/ot-cli-ftd 2 (>panid 0x1234, >ifconfig up, >thread start)
