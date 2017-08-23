@@ -11,12 +11,6 @@
 
 #include <qthread.hpp>
 
-/**
- * Unique node ID.
- *
- */
-extern uint32_t NODE_ID;
-
 using namespace std;
 
 class SystemThread : public QThread
@@ -88,11 +82,12 @@ extern "C" void otPlatUartSendDone(void)
 
 Qthread::Qthread() : Qthread(NODE_ID)
 {
+    NODE_ID++;
 }
 
 Qthread::Qthread(uint32_t node_id)
 {
-    char *argv_default[2] = {(char*) "qthread.cpp",
+    char *argv_default[2] = {(char*) __BASE_FILE__,
                              (char*) QString("%1").arg(node_id).toStdString().c_str()};
 
     PlatformInit(2, argv_default);
@@ -296,4 +291,43 @@ void Qthread::sanityTest(void)
         output = otDiagProcessCmdLine(string);
         cout << output << endl;
     }
+}
+
+QString Qthread::getRole(void)
+{
+    otInstance *sInstance = static_cast< otInstance* > (instance);
+    if (sInstance)
+    {
+        switch (otThreadGetDeviceRole(sInstance))
+        {
+        case OT_DEVICE_ROLE_DISABLED:
+            return QString("OT_DEVICE_ROLE_DISABLED");
+
+        case OT_DEVICE_ROLE_DETACHED:
+            return QString("OT_DEVICE_ROLE_DETACHED");
+
+        case OT_DEVICE_ROLE_CHILD:
+            return QString("OT_DEVICE_ROLE_CHILD");
+
+        case OT_DEVICE_ROLE_ROUTER:
+            return QString("OT_DEVICE_ROLE_ROUTER");
+
+        case OT_DEVICE_ROLE_LEADER:
+            return QString("OT_DEVICE_ROLE_LEADER");
+
+        default:
+            return QString("Unknown");
+        }
+    }
+    return QString("NULL instance");
+}
+
+uint16_t Qthread::getRloc(void)
+{
+    otInstance *sInstance = static_cast< otInstance* > (instance);
+    if (sInstance)
+    {
+        return otThreadGetRloc16(sInstance);
+    }
+    return 0xffff;
 }
