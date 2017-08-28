@@ -1,17 +1,17 @@
 #include <QThread>
 #include <QtEndian>
 #include <QString>
-#include <iostream>
+#include <QDebug>
 #include <assert.h>
 
 // OpenThread API
 #include <openthread/openthread.h>
 #include <openthread/platform/platform.h>
 #include <openthread/diag.h>
+#include <openthread/icmp6.h>
+#include <openthread/ip6.h>
 
 #include <qthread.hpp>
-
-using namespace std;
 
 class SystemThread : public QThread
 {
@@ -34,27 +34,27 @@ private:
                 switch (newRole)
                 {
                 case OT_DEVICE_ROLE_DISABLED:
-                    printf("switch disabled\n");
+                    qDebug("switch disabled\n");
                     break;
 
                 case OT_DEVICE_ROLE_DETACHED:
-                    printf("switch detached\n");
+                    qDebug("switch detached\n");
                     break;
 
                 case OT_DEVICE_ROLE_CHILD:
-                    printf("switch child, rloc16 = %#x\n", otThreadGetRloc16(sysInstance));
+                    qDebug("switch child, rloc16 = %#x\n", otThreadGetRloc16(sysInstance));
                     break;
 
                 case OT_DEVICE_ROLE_ROUTER:
-                    printf("switch router, rloc16 = %#x\n", otThreadGetRloc16(sysInstance));
+                    qDebug("switch router, rloc16 = %#x\n", otThreadGetRloc16(sysInstance));
                     break;
 
                 case OT_DEVICE_ROLE_LEADER:
-                    printf("switch leader, rloc16 = %#x\n", otThreadGetRloc16(sysInstance));
+                    qDebug("switch leader, rloc16 = %#x\n", otThreadGetRloc16(sysInstance));
                     break;
 
                 default:
-                    printf("switch unknown (%d)\n", newRole);
+                    qDebug("switch unknown (%d)\n", newRole);
                 }
                 deviceRole = newRole;
             }
@@ -85,7 +85,7 @@ Qthread::Qthread() : Qthread(NODE_ID)
     NODE_ID++;
 }
 
-Qthread::Qthread(uint32_t node_id)
+Qthread::Qthread(quint32 node_id)
 {
     char *argv_default[2] = {(char*) __BASE_FILE__,
                              (char*) QString("%1").arg(node_id).toStdString().c_str()};
@@ -94,13 +94,13 @@ Qthread::Qthread(uint32_t node_id)
 
     // Call to query the buffer size
     size_t pfBufferLength = 0;
-    (void)PlatformAlloc(NULL, &pfBufferLength);
+    (void)PlatformAlloc(nullptr, &pfBufferLength);
 
     size_t otBufferLength = 0;
-    (void)otInstanceInit(NULL, &otBufferLength);
+    (void)otInstanceInit(nullptr, &otBufferLength);
 
     // Call to allocate the buffer
-    instanceBuffer = new uint8_t[pfBufferLength + otBufferLength] {};
+    instanceBuffer = new quint8[pfBufferLength + otBufferLength] {};
     assert(instanceBuffer);
 
     // Initialize platform with the buffer
@@ -109,25 +109,28 @@ Qthread::Qthread(uint32_t node_id)
 
     // Initialize OpenThread with the buffer
     sInstance = otInstanceInit(sInstance, &otBufferLength);
-    printf("sInstance = %p\n", sInstance);
+    qDebug("sInstance = %p\n", sInstance);
     assert(sInstance);
+
+    // Initialize default log level
+    otSetDynamicLogLevel(sInstance, OT_LOG_LEVEL_NONE);
 
     // Create system thread
     system_thread = new SystemThread(*this);
     assert(system_thread);
 
-    printf("otLinkSetPanId (%d)\n", otLinkSetPanId(sInstance, static_cast<otPanId>(0x1234)));
-    printf("panid = %#x\n", otLinkGetPanId(sInstance));
+    qDebug("otLinkSetPanId (%d)\n", otLinkSetPanId(sInstance, static_cast<otPanId>(0x1234)));
+    qDebug("panid = %#x\n", otLinkGetPanId(sInstance));
 
     if (!otIp6IsEnabled(sInstance))
     {
-        printf("otIp6SetEnabled (%d)\n", otIp6SetEnabled(sInstance, true));
+        qDebug("otIp6SetEnabled (%d)\n", otIp6SetEnabled(sInstance, true));
     }
-    printf("ifconfig up\n");
+    qDebug("ifconfig up\n");
 
-    printf("otThreadSetEnabled (%d)\n", otThreadSetEnabled(sInstance, true));
+    qDebug("otThreadSetEnabled (%d)\n", otThreadSetEnabled(sInstance, true));
 
-    printf("waiting thread network ...\n");
+    qDebug("waiting thread network ...\n");
 
     // Start system thread for task scheduling
     instance = static_cast< void* > (sInstance);
@@ -189,26 +192,6 @@ bool Qthread::operator==(const Qthread& qthread)
         return true;
     }
     return false;
-}
-
-void Qthread::listIpAddr(void)
-{
-    otInstance *sInstance = static_cast< otInstance* > (instance);
-    if (sInstance)
-    {
-        for (const otNetifAddress *addr = otIp6GetUnicastAddresses(sInstance); addr; addr = addr->mNext)
-        {
-            printf("%x:%x:%x:%x:%x:%x:%x:%x\r\n",
-                qToBigEndian(addr->mAddress.mFields.m16[0]),
-                qToBigEndian(addr->mAddress.mFields.m16[1]),
-                qToBigEndian(addr->mAddress.mFields.m16[2]),
-                qToBigEndian(addr->mAddress.mFields.m16[3]),
-                qToBigEndian(addr->mAddress.mFields.m16[4]),
-                qToBigEndian(addr->mAddress.mFields.m16[5]),
-                qToBigEndian(addr->mAddress.mFields.m16[6]),
-                qToBigEndian(addr->mAddress.mFields.m16[7]));
-        }
-    }
 }
 
 void Qthread::sanityTest(void)
@@ -284,13 +267,38 @@ void Qthread::sanityTest(void)
     for (unsigned int i = 0; i < sizeof(tests) / sizeof(tests[0]);  i++)
     {
         char string[50];
-        char *output = NULL;
+        char *output = nullptr;
 
         memcpy(string, tests[i].command, strlen(tests[i].command) + 1);
 
         output = otDiagProcessCmdLine(string);
-        cout << output << endl;
+        qDebug() << output;
     }
+}
+
+QList<QString> Qthread::getIpAddress(void)
+{
+    QList<QString> addrList;
+
+    otInstance *sInstance = static_cast< otInstance* > (instance);
+    if (sInstance)
+    {
+        for (const otNetifAddress *addr = otIp6GetUnicastAddresses(sInstance); addr; addr = addr->mNext)
+        {
+            QString str = QString("%1:%2:%3:%4:%5:%6:%7:%8")
+                    .arg(qToBigEndian(addr->mAddress.mFields.m16[0]), 0, 16)
+                    .arg(qToBigEndian(addr->mAddress.mFields.m16[1]), 0, 16)
+                    .arg(qToBigEndian(addr->mAddress.mFields.m16[2]), 0, 16)
+                    .arg(qToBigEndian(addr->mAddress.mFields.m16[3]), 0, 16)
+                    .arg(qToBigEndian(addr->mAddress.mFields.m16[4]), 0, 16)
+                    .arg(qToBigEndian(addr->mAddress.mFields.m16[5]), 0, 16)
+                    .arg(qToBigEndian(addr->mAddress.mFields.m16[6]), 0, 16)
+                    .arg(qToBigEndian(addr->mAddress.mFields.m16[7]), 0, 16);
+
+            addrList.append(str);
+        }
+    }
+    return addrList;
 }
 
 QString Qthread::getRole(void)
@@ -322,7 +330,7 @@ QString Qthread::getRole(void)
     return QString("NULL instance");
 }
 
-uint16_t Qthread::getRloc(void)
+quint16 Qthread::getRloc(void)
 {
     otInstance *sInstance = static_cast< otInstance* > (instance);
     if (sInstance)

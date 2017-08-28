@@ -1,20 +1,17 @@
 #include <QCoreApplication>
 #include <QString>
+#include <QDebug>
 #include <vector>
-#include <iostream>
-#include <assert.h>
 
 #include <qthread.hpp>
-#include <qt_console.h>
-
-using namespace std;
+#include "qt_console.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    cout<< "Hello Qt_console!\n";
+    qInfo("Hello Qt_console!");
 
-    uint32_t nodes = 1;
+    quint32 nodes = 1;
 
     for (int i = 1; i < argc; i++)
     {
@@ -32,10 +29,16 @@ int main(int argc, char *argv[])
         }
     }
 
-    vector<Qthread> myNodes(nodes);
+    std::vector<Qthread> myNodes(nodes);
     for (auto &node : myNodes)
     {
-        node.listIpAddr();
+        qInfo() << node.getRole();
+        qInfo("Device RLOC %#x", node.getRloc());
+
+        for (auto addr : node.getIpAddress())
+        {
+            qInfo() << addr;
+        }
     }
 
     return a.exec();
