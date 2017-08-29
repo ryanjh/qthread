@@ -6,22 +6,22 @@ class Qthread
 
 public:
     Qthread();
-    explicit Qthread(uint32_t node_id);
+    explicit Qthread(quint32 node_id);
     virtual ~Qthread();
     Qthread(const Qthread&)            = delete;
     Qthread& operator=(const Qthread&) = delete;
 
     bool operator==(const Qthread&);
 
-    void listIpAddr(void);
     void sanityTest(void);
+    QList<QString> getIpAddress(void);
     QString getRole(void);
-    uint16_t getRloc(void);
+    quint16 getRloc(void);
 
 private:
     SystemThread *system_thread  = nullptr;
     void         *instance       = nullptr;
-    uint8_t      *instanceBuffer = nullptr;
+    quint8       *instanceBuffer = nullptr;
 };
 
 /*  /usr/local/src/openthread/examples/platforms/posix/platform-posix.h  */
@@ -29,10 +29,10 @@ private:
  * Unique node ID.
  *
  */
-extern uint32_t NODE_ID;
+extern quint32 NODE_ID;
 
 /**
  * Well-known Unique ID used by a simulated radio that supports promiscuous mode.
  *
  */
-extern uint32_t WELLKNOWN_NODE_ID;
+extern quint32 WELLKNOWN_NODE_ID;
