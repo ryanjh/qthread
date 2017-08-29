@@ -31,6 +31,4 @@ Build patched Openthread static libraries
 3. make -f examples/Makefile-posix
 
 Test:
-1. build/qt_console/qt_console
-2. /usr/local/src/openthread/output/x86_64-unknown-linux-gnu/bin/ot-cli-ftd 2 (>panid 0x1234, >ifconfig up, >thread start)
-3. ping fdde:ad00:beef:0:0:ff:fe00:rloc16 (set rloc16 according to peer device)
+1. ./build/qt_console/qt_console 2 1 2 (Create two devices, one becomes leader and the other one becomes child->router)
