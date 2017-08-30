@@ -41,5 +41,19 @@ int main(int argc, char *argv[])
         }
     }
 
+    // ping children with their GUA address
+    if (myNodes.size() > 1)
+    {
+        auto leader = myNodes.begin();
+        for (auto child = leader + 1; child != myNodes.end(); child++)
+        {
+            QString pingAddress = child->getGlobalAddress();
+            if (pingAddress.length())
+            {
+                leader->ping(pingAddress);
+            }
+        }
+    }
+
     return a.exec();
 }

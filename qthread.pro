@@ -8,6 +8,8 @@ CONFIG += create_prl
 TEMPLATE = lib
 
 SOURCES += src/qthread.cpp
+SOURCES += src/diagnostics.cpp
+SOURCES += src/icmpv6.cpp
 HEADERS += include/qthread.hpp
 
 OPENTHREADBASE = /usr/local/src/openthread
