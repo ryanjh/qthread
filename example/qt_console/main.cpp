@@ -17,14 +17,14 @@ int main(int argc, char *argv[])
     {
         switch(static_cast<Argv>(i))
         {
-        case Argv::MAX_NODES:
-            WELLKNOWN_NODE_ID = QString(argv[i]).toUInt();
+        case Argv::CREATE_NODES:
+            nodes = QString(argv[i]).toUInt();
             break;
         case Argv::START_NODEID:
             NODE_ID = QString(argv[i]).toUInt();
             break;
-        case Argv::CREATE_NODES:
-            nodes = QString(argv[i]).toUInt();
+        case Argv::MAX_NODES:
+            WELLKNOWN_NODE_ID = QString(argv[i]).toUInt();
             break;
         }
     }
