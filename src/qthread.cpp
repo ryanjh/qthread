@@ -118,6 +118,9 @@ Qthread::Qthread(quint32 node_id)
     // Initialize default log level
     otSetDynamicLogLevel(sInstance, OT_LOG_LEVEL_NONE);
 
+    // Setup network interface
+    setupNetwork();
+
     // Create system thread
     system_thread = new SystemThread(*this);
     assert(system_thread);

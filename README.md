@@ -17,13 +17,17 @@ Build (GitHub libqthread.a) https://github.com/ryanjh/qthread/tree/qthread_libra
 
 Build (GitHub qt_console): https://github.com/ryanjh/qthread/tree/master/qt_console
 1. cd qthread/
-2. Link the installed library (/usr/local/lib/qthread/libqthread.a)
-/opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
+2. Link the released library (lib/libqthread_Linux_x86_64.a)
+   /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=release_Linux_x86_64 CONFIG+=qml_debug
+   make -C build/qt_console/
+
 3. OR Link the built library (build/qthread/libqthread.a)
-/opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug_lib CONFIG+=debug CONFIG+=qml_debug
-4. OR Link the released library (lib/libqthread_Linux_x86_64.a)
-/opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=release_Linux_x86_64 CONFIG+=qml_debug
-5. make -C build/qt_console/
+   /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug_lib CONFIG+=debug CONFIG+=qml_debug
+   make -C build/qt_console/
+
+4. [deprecated] OR Link the installed library (/usr/local/lib/qthread/libqthread.a)
+   /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
+   make -C build/qt_console/
 
 Build patched Openthread static libraries
 1. git clone https://github.com/ryanjh/openthread
@@ -31,4 +35,5 @@ Build patched Openthread static libraries
 3. make -f examples/Makefile-posix
 
 Test:
-1. ./build/qt_console/qt_console 2 1 2 (Create two devices, one becomes leader and the other one becomes child->router)
+1. (Docker Container 1) ./build/qt_console/qt_console 2 (Create two devices, one becomes leader and the other one becomes child->router)
+2. (Docker Container 2) ./build/qt_console/qt_console 3 5 (Create threes devices connecting to the leader of container 1,  All child->router)
