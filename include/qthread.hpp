@@ -38,6 +38,11 @@ public:
      */
     void ping(QString ipAddress, quint16 length = 8);
 
+    /**
+     * network
+     */
+    void setupNetwork(QString interface = "eth0");
+
 private:
     SystemThread *system_thread  = nullptr;
     void         *instance       = nullptr;

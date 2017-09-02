@@ -1,4 +1,5 @@
 QT -= gui
+QT += network
 
 CONFIG += c++11
 
@@ -10,6 +11,7 @@ TEMPLATE = lib
 SOURCES += src/qthread.cpp
 SOURCES += src/diagnostics.cpp
 SOURCES += src/icmpv6.cpp
+SOURCES += src/network.cpp
 HEADERS += include/qthread.hpp
 
 OPENTHREADBASE = /usr/local/src/openthread
