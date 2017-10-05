@@ -60,9 +60,4 @@ unix:doc.path = /usr/local/lib/qthread
 unix:doc.files = $$LOGFILE
 INSTALLS += doc
 
-unix:SYSTEM = $$system(uname -s)_$$system(uname -m)
-
-release.depends = staticlib
-unix:release.commands = @$(COPY_FILE) $$OPENTHREADINSTALL $(TARGET) $$LOGFILE $$PWD/lib; cd $$PWD/lib; ls *.a | xargs -n 1 ar x; $(DEL_FILE) *.a; ar csr libqthread_$${SYSTEM}.a *.o $$LOGFILE; $(DEL_FILE) *.o $$LOGFILE; cd -
-
-QMAKE_EXTRA_TARGETS += release
+include($$PWD/qthread_release.pro)
