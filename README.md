@@ -29,22 +29,22 @@ Build (GitHub qt_console): https://github.com/ryanjh/qthread/tree/master/qt_cons
 
 2. make -C build/qt_console/
 
-Install qthread library [deprecated]
-1. sudo make -C build/qthread/ install  #Install /usr/local/lib/qthread/libqthread.a
-
-Link to installed library (/usr/local/lib/qthread/libqthread.a) [deprecated]
-1. /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
-2. make -C build/qt_console/
-
-Release qthread library
+Release qthread library:
 
 https://github.com/ryanjh/qthread/blob/qthread_rspi/lib/README.md
-
-Qt5 Run-time Environment [Raspberry Pi2]:
-1. download lib/qt5pi_rpi2.tar.gz cross-compiled share libraries to target board
-2. tar zxvf lib/qt5pi_rpi2.tar.gz
-3. export LD_LIBRARY_PATH=qt5pi/lib/
 
 Test:
 1. (Docker Container 1) ./build/qt_console/qt_console 2 (Create two devices, one becomes leader and the other one becomes child->router)
 2. (Docker Container 2) ./build/qt_console/qt_console 3 5 (Create threes devices connecting to the leader of container 1,  All child->router)
+
+(Appendix) Install qthread library [deprecated]
+1. sudo make -C build/qthread/ install  #Install /usr/local/lib/qthread/libqthread.a
+
+(Appendix) Link to installed library (/usr/local/lib/qthread/libqthread.a) [deprecated]
+1. /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
+2. make -C build/qt_console/
+
+(Appendix) Qt5 Run-time Environment [Raspberry Pi2]:
+1. download lib/qt5pi_rpi2.tar.gz cross-compiled share libraries to target board
+2. tar zxvf lib/qt5pi_rpi2.tar.gz
+3. export LD_LIBRARY_PATH=qt5pi/lib/
