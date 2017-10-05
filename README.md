@@ -36,20 +36,6 @@ Link to installed library (/usr/local/lib/qthread/libqthread.a) [deprecated]
 1. /opt/Qt/5.8/gcc_64/bin/qmake -o build/qt_console/Makefile example/qt_console/qt_console.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
 2. make -C build/qt_console/
 
-Build patched Openthread static libraries
-1. git clone https://github.com/ryanjh/openthread
-2. ./bootstrap
-3. make -f examples/Makefile-posix
-4. append below definitions and include files at the end of file /usr/local/src/openthread/build/x86_64-unknown-linux-gnu/include/openthread-config.h
-
-   #define OPENTHREAD_MULTIPLE_INSTANCE
-
-   #include <stddef.h>
-
-   #include <stdlib.h>
-
-5. make -f examples/Makefile-posix
-
 Release qthread library
 
 https://github.com/ryanjh/qthread/blob/qthread_rspi/lib/README.md
