@@ -43,16 +43,21 @@ Build patched Openthread static libraries
 4. append below definitions and include files at the end of file /usr/local/src/openthread/build/x86_64-unknown-linux-gnu/include/openthread-config.h
 
    #define OPENTHREAD_MULTIPLE_INSTANCE
-   
+
    #include <stddef.h>
-   
+
    #include <stdlib.h>
-   
+
 5. make -f examples/Makefile-posix
 
 Release qthread library
 
 https://github.com/ryanjh/qthread/blob/qthread_rspi/lib/README.md
+
+Qt5 Run-time Environment [Raspberry Pi2]:
+1. download lib/qt5pi_rpi2.tar.gz cross-compiled share libraries to target board
+2. tar zxvf lib/qt5pi_rpi2.tar.gz
+3. export LD_LIBRARY_PATH=qt5pi/lib/
 
 Test:
 1. (Docker Container 1) ./build/qt_console/qt_console 2 (Create two devices, one becomes leader and the other one becomes child->router)
