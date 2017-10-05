@@ -45,4 +45,19 @@ LIBS += -lopenthread-platform-utils
 #(Optional) OpenThreads diagnostic module library
 LIBS += -lopenthread-diag
 
+for(var, $$list($$member(LIBS, 1, -1))) {
+   OPENTHREADINSTALL += $$absolute_path($$replace(var, -l, lib).a, $$OPENTHREADLIB)
+}
+
+LOGFILE = openthread.log
+COMMITID = $$quote($$system(git -C $$OPENTHREADBASE log -1 --oneline))
+write_file($$OUT_PWD/$$LOGFILE, COMMITID)
+
+unix:target.path = /usr/local/lib/qthread
+INSTALLS += target
+
+unix:doc.path = /usr/local/lib/qthread
+unix:doc.files = $$LOGFILE
+INSTALLS += doc
+
 include($$PWD/qthread_release.pro)

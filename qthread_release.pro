@@ -1,28 +1,14 @@
 #Qthread library release
 
-for(var, $$list($$member(LIBS, 1, -1))) {
-   OPENTHREADINSTALL += $$absolute_path($$replace(var, -l, lib).a, $$OPENTHREADLIB)
-}
-
-LOGFILE = openthread.log
-COMMITID = $$quote($$system(git -C $$OPENTHREADBASE log -1 --oneline))
-write_file($$OUT_PWD/$$LOGFILE, COMMITID)
-
-unix:target.path = /usr/local/lib/qthread
-INSTALLS += target
-
-unix:doc.path = /usr/local/lib/qthread
-unix:doc.files = $$LOGFILE
-INSTALLS += doc
-
 unix:SYSTEM = $$system(uname -s)_$$system(uname -m)
 
-release.depends = staticlib
-unix:release.commands = @$(COPY_FILE) $$OPENTHREADINSTALL $(TARGET) $$LOGFILE $$PWD/lib; cd $$PWD/lib; ls *.a | xargs -n 1 ar x; $(DEL_FILE) *.a; ar csr libqthread_$${SYSTEM}.a *.o $$LOGFILE; $(DEL_FILE) *.o $$LOGFILE; cd -
+unix:RELEASE_SCRIPT = $(MKDIR) $$PWD/lib/tmp; $(COPY_FILE) $$OPENTHREADINSTALL $(TARGET) $$LOGFILE $$PWD/lib/tmp; cd $$PWD/lib/tmp; ls *.a | xargs -n 1 ar x; ar csr libqthread_release.a *.o $$LOGFILE; cd -
+unix:RELEASE_CLEAN = $(DEL_FILE) -r $$PWD/lib/tmp
 
+release.depends = staticlib
+unix:release.commands = @$$RELEASE_SCRIPT; $(MOVE) $$PWD/lib/tmp/libqthread_release.a $$PWD/lib/libqthread_$${SYSTEM}.a; $$RELEASE_CLEAN
 QMAKE_EXTRA_TARGETS += release
 
 release_rpi2.depends = staticlib
-unix:release_rpi2.commands = @$(COPY_FILE) $$OPENTHREADINSTALL $(TARGET) $$LOGFILE $$PWD/lib; cd $$PWD/lib; ls *.a | xargs -n 1 ar x; $(DEL_FILE) *.a; ar csr libqthread_Raspberry_Pi2.a *.o $$LOGFILE; $(DEL_FILE) *.o $$LOGFILE; cd -
-
+unix:release_rpi2.commands = @$$RELEASE_SCRIPT; $(MOVE) $$PWD/lib/tmp/libqthread_release.a $$PWD/lib/libqthread_Raspberry_Pi2.a; $$RELEASE_CLEAN
 QMAKE_EXTRA_TARGETS += release_rpi2
