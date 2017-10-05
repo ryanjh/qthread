@@ -119,14 +119,7 @@ Qthread::Qthread(quint32 node_id)
     otSetDynamicLogLevel(sInstance, OT_LOG_LEVEL_NONE);
 
     // Setup network interface
-    if (qEnvironmentVariableIsSet("QTHREAD_INTERFACE"))
-    {
-        setupNetwork(QString::fromLocal8Bit(qgetenv("QTHREAD_INTERFACE").constData()));
-    }
-    else
-    {
-        setupNetwork();
-    }
+    setupNetwork();
 
     // Create system thread
     system_thread = new SystemThread(*this);
