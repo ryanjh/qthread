@@ -45,9 +45,23 @@ Release qthread library:
 
 ---
 
-Test Steps:
-1. (Docker Container 1) ./build/qt_console/qt_console 2 (Create two devices, one becomes leader and the other one becomes child->router)
-2. (Docker Container 2) ./build/qt_console/qt_console 3 5 (Create threes devices connecting to the leader of container 1,  All child->router)
+Test Steps [Ubuntu16.04]:
+1. Create two devices, one becomes leader and the other one becomes child->router
+
+(Docker Container 1) ./build/qt_console/qt_console 2
+
+2. Create threes devices connecting to the leader of container 1,  All child->router
+
+(Docker Container 2) ./build/qt_console/qt_console 3 5
+
+Test Steps [Raspberry Pi2]:
+1. Create leader devices
+
+(Ubuntu Laptop) ./qt_console
+
+2. Create a child device connected to the leader
+
+(Raspberry Pi2) ./qt_console 1 2
 
 ---
 
